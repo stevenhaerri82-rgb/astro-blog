@@ -1,0 +1,88 @@
+---
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>{post.data.title}</title>
+    <meta name="description" content={post.data.description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 2rem;
+        line-height: 1.7;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .meta {
+        color: #666;
+        font-size: 0.95rem;
+      }
+
+      .tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+      }
+
+      .tag {
+        border: 1px solid #ddd;
+        border-radius: 999px;
+        padding: 0.2rem 0.7rem;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><a href="/blog/">Zur Blogübersicht</a></p>
+
+      <article>
+        <h1>{post.data.title}</h1>
+
+        <p class="meta">
+          {post.data.pubDate.toLocaleDateString('de-CH')}
+        </p>
+
+        {post.data.heroImage && (
+          <img src={post.data.heroImage} alt="" />
+        )}
+
+        <Content />
+
+        {post.data.tags && (
+          <div class="tags">
+            {post.data.tags.map((tag) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        )}
+      </article>
+    </main>
+  </body>
+</html>

@@ -1,16 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
 
-const latestPosts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <html lang="de">
   <head>
     <meta charset="utf-8" />
-    <title>Mein Blog</title>
-    <meta name="description" content="Persönlicher Blog" />
+    <title>Blog</title>
+    <meta name="description" content="Blogübersicht" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body {
@@ -27,29 +26,29 @@ const latestPosts = (await getCollection('blog', ({ data }) => !data.draft))
 
       article {
         border-bottom: 1px solid #ddd;
-        padding: 1rem 0;
+        padding: 1.5rem 0;
+      }
+
+      .meta {
+        color: #666;
+        font-size: 0.95rem;
       }
     </style>
   </head>
   <body>
     <main>
-      <h1>Mein Blog</h1>
+      <p><a href="/">Zur Startseite</a></p>
 
-      <p>
-        Willkommen auf meinem neuen Astro-Blog.
-      </p>
+      <h1>Blog</h1>
 
-      <p>
-        <a href="/blog/">Alle Blogbeiträge anzeigen</a>
-      </p>
-
-      <h2>Neueste Beiträge</h2>
-
-      {latestPosts.map((post) => (
+      {posts.map((post) => (
         <article>
-          <h3>
+          <h2>
             <a href={`/blog/${post.id}/`}>{post.data.title}</a>
-          </h3>
+          </h2>
+          <p class="meta">
+            {post.data.pubDate.toLocaleDateString('de-CH')}
+          </p>
           <p>{post.data.description}</p>
         </article>
       ))}
